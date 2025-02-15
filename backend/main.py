@@ -52,7 +52,10 @@ def track_window_focus():
             }
             
             with open(json_file_path, 'r+') as json_file:
-                content = json.load(json_file)
+                try:
+                    content = json.load(json_file)
+                except json.JSONDecodeError:
+                    content = []
                 content.append(data)
                 json_file.seek(0)
                 json.dump(content, json_file, indent=4)
@@ -81,7 +84,10 @@ class API:
         # Read JSON data
         if os.path.exists(json_file_path):
             with open(json_file_path, 'r') as json_file:
-                data["json_data"] = json.load(json_file)
+                try:
+                    data["json_data"] = json.load(json_file)
+                except json.JSONDecodeError:
+                    data["json_data"] = []
         
         # Read CSV data
         if os.path.exists(csv_file_path):
