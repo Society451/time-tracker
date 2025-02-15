@@ -24,12 +24,13 @@ h1 {
 }
 
 #chart {
-    width: 60%;
-    height: 600px;
+    width: 400px; /* Adjust width */
+    height: 400px; /* Adjust height */
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    margin-right: 20px; /* Add margin to separate from legend */
 }
 
 .tooltip {
@@ -37,8 +38,7 @@ h1 {
 }
 
 #color-guide {
-    width: 30%;
-    margin-left: 20px;
+    width: 50%; /* Adjust width */
     display: flex;
     flex-direction: column; /* Make the legend vertical */
     align-items: flex-start;

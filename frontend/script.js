@@ -17,10 +17,10 @@ window.addEventListener('pywebviewready', function() {
 
         const svg = d3.select('#chart')
             .append('svg')
-            .attr('width', 800)
-            .attr('height', 400)
+            .attr('width', 400) // Adjust width
+            .attr('height', 400) // Adjust height
             .append('g')
-            .attr('transform', 'translate(400,200)');
+            .attr('transform', 'translate(200,200)'); // Center the chart
         
         // Define a time parser for the timestamp format
         const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
@@ -48,7 +48,7 @@ window.addEventListener('pywebviewready', function() {
 
         // Create a pie chart
         const pie = d3.pie().value(d => d.duration);
-        const arc = d3.arc().innerRadius(0).outerRadius(150);
+        const arc = d3.arc().innerRadius(0).outerRadius(150); // Adjust outer radius
 
         const arcs = svg.selectAll('arc')
             .data(pie(pieData))
@@ -62,11 +62,11 @@ window.addEventListener('pywebviewready', function() {
             .attr('d', arc)
             .attr('fill', (d, i) => color(i))
             .on('mouseover', function(event, d) {
-                d3.select(this).transition().duration(200).attr('d', d3.arc().innerRadius(0).outerRadius(170));
+                d3.select(this).transition().duration(200).attr('d', d3.arc().innerRadius(0).outerRadius(170)); // Increase hover radius
                 svg.append('text')
                     .attr('class', 'tooltip')
                     .attr('x', 0)
-                    .attr('y', -180)
+                    .attr('y', -180) // Adjust tooltip position
                     .attr('text-anchor', 'middle')
                     .attr('font-size', '14px')
                     .attr('font-weight', 'bold')
