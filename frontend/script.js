@@ -13,79 +13,68 @@ window.addEventListener('pywebviewready', function() {
         const svg = d3.select('#chart')
             .append('svg')
             .attr('width', 800)
-            .attr('height', 400);
+            .attr('height', 400)
+            .append('g')
+            .attr('transform', 'translate(400,200)');
         
         // Define a time parser for the timestamp format
         const parseTime = d3.timeParse("%Y-%m-%d %H:%M:%S");
 
-        // Process JSON Data: Convert timestamp to Date and sort by time
+        // Process JSON Data: Convert timestamp to Date and calculate durations
         const jsonData = data.json_data.map(d => ({
             ...d,
             date: parseTime(d.timestamp)
         })).sort((a, b) => d3.ascending(a.date, b.date));
 
-        console.log('Processed JSON Data:', jsonData);
+        const durations = {};
+        for (let i = 0; i < jsonData.length - 1; i++) {
+            const app = jsonData[i].focused_window;
+            const duration = (jsonData[i + 1].date - jsonData[i].date) / 1000; // duration in seconds
+            if (durations[app]) {
+                durations[app] += duration;
+            } else {
+                durations[app] = duration;
+            }
+        }
 
-        // Create a time scale based on the range of dates
-        const xScale = d3.scaleTime()
-            .domain(d3.extent(jsonData, d => d.date))
-            .range([50, 750]);
+        const pieData = Object.entries(durations).map(([key, value]) => ({ app: key, duration: value }));
 
-        // Add circles for each JSON record positioned by time (with fixed y)
-        svg.selectAll('circle')
-            .data(jsonData)
+        console.log('Pie Data:', pieData);
+
+        // Create a pie chart
+        const pie = d3.pie().value(d => d.duration);
+        const arc = d3.arc().innerRadius(0).outerRadius(150);
+
+        const arcs = svg.selectAll('arc')
+            .data(pie(pieData))
             .enter()
-            .append('circle')
-            .attr('cx', d => xScale(d.date))
-            .attr('cy', 100)
-            .attr('r', 10)
-            .attr('fill', 'blue');
+            .append('g')
+            .attr('class', 'arc');
 
-        // Optional: add text labels for the focused_window on each circle
-        svg.selectAll('text')
-            .data(jsonData)
-            .enter()
-            .append('text')
-            .attr('x', d => xScale(d.date))
-            .attr('y', 90)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '10px')
-            .text(d => d.focused_window.split(' - ')[0]); // short label
+        arcs.append('path')
+            .attr('d', arc)
+            .attr('fill', (d, i) => d3.schemeCategory10[i % 10])
+            .on('mouseover', function(event, d) {
+                d3.select(this).transition().duration(200).attr('d', d3.arc().innerRadius(0).outerRadius(170));
+                svg.append('text')
+                    .attr('class', 'tooltip')
+                    .attr('x', 0)
+                    .attr('y', -180)
+                    .attr('text-anchor', 'middle')
+                    .attr('font-size', '14px')
+                    .attr('font-weight', 'bold')
+                    .text(`${d.data.app}: ${d.data.duration.toFixed(2)}s`);
+            })
+            .on('mouseout', function(event, d) {
+                d3.select(this).transition().duration(200).attr('d', arc);
+                svg.select('.tooltip').remove();
+            });
 
-        // Process CSV Data: Compute number of open windows for each record
-        const csvData = data.csv_data.map(d => ({
-            timestamp: d.timestamp,
-            count: JSON.parse(d.open_windows).length
-        }));
-
-        console.log('Processed CSV Data:', csvData);
-
-        // Create a band scale for the CSV bar chart placed at lower part of svg
-        const xBand = d3.scaleBand()
-            .domain(csvData.map(d => d.timestamp))
-            .range([50, 750])
-            .padding(0.1);
-
-        // Create a linear scale for the count values
-        const yScale = d3.scaleLinear()
-            .domain([0, d3.max(csvData, d => d.count)])
-            .range([350, 200]); // bars grow upward
-
-        // Add bars for each CSV record
-        svg.selectAll('rect')
-            .data(csvData)
-            .enter()
-            .append('rect')
-            .attr('x', d => xBand(d.timestamp))
-            .attr('y', d => yScale(d.count))
-            .attr('width', xBand.bandwidth())
-            .attr('height', d => 350 - yScale(d.count))
-            .attr('fill', 'green');
-            
-        // Optionally: add x-axis for time
-        const xAxis = d3.axisBottom(xScale);
-        svg.append("g")
-            .attr("transform", "translate(0,350)")
-            .call(xAxis);
+        // Remove the text labels from the arcs
+        // arcs.append('text')
+        //     .attr('transform', d => `translate(${arc.centroid(d)})`)
+        //     .attr('text-anchor', 'middle')
+        //     .attr('font-size', '10px')
+        //     .text(d => d.data.app); // full label
     }
 });

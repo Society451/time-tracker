@@ -16,3 +16,7 @@ h1 {
     height: 600px;
     margin-top: 20px;
 }
+
+.tooltip {
+    fill: black;
+}
