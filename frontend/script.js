@@ -1,15 +1,20 @@
 window.addEventListener('pywebviewready', function() {
     console.log('pywebview is ready. window.pywebview:', window.pywebview);
-    window.pywebview.api.get_data().then(data => {
-        console.log('Data received from backend:', data);
-        const parsedData = JSON.parse(data);
-        visualizeData(parsedData);
-    }).catch(error => {
-        console.error('Error fetching data from backend:', error);
-    });
-    
+
+    function fetchDataAndVisualize() {
+        window.pywebview.api.get_data().then(data => {
+            console.log('Data received from backend:', data);
+            const parsedData = JSON.parse(data);
+            visualizeData(parsedData);
+        }).catch(error => {
+            console.error('Error fetching data from backend:', error);
+        });
+    }
+
     function visualizeData(data) {
         console.log('Visualizing data:', data);
+        d3.select('#chart').selectAll('*').remove(); // Clear previous chart
+
         const svg = d3.select('#chart')
             .append('svg')
             .attr('width', 800)
@@ -28,7 +33,7 @@ window.addEventListener('pywebviewready', function() {
 
         const durations = {};
         for (let i = 0; i < jsonData.length - 1; i++) {
-            const app = jsonData[i].focused_window;
+            const app = jsonData[i].focused_window.split(" - ").pop();
             const duration = (jsonData[i + 1].date - jsonData[i].date) / 1000; // duration in seconds
             if (durations[app]) {
                 durations[app] += duration;
@@ -69,12 +74,9 @@ window.addEventListener('pywebviewready', function() {
                 d3.select(this).transition().duration(200).attr('d', arc);
                 svg.select('.tooltip').remove();
             });
-
-        // Remove the text labels from the arcs
-        // arcs.append('text')
-        //     .attr('transform', d => `translate(${arc.centroid(d)})`)
-        //     .attr('text-anchor', 'middle')
-        //     .attr('font-size', '10px')
-        //     .text(d => d.data.app); // full label
     }
+
+    // Fetch data and visualize every 5 seconds
+    setInterval(fetchDataAndVisualize, 5000);
+    fetchDataAndVisualize(); // Initial fetch
 });
