@@ -67,7 +67,7 @@ def track_window_focus():
             last_focused_window = current_application
             last_open_windows = windows
         
-        time.sleep(2)
+        time.sleep(0.1)
 
 class API:
     def get_data(self):
@@ -107,7 +107,7 @@ def start_webview():
     html_path = os.path.join(os.getcwd(), 'frontend', 'main.html')
     window = webview.create_window('Time Tracker', html_path, js_api=api)
     print("Starting webview with API")
-    webview.start(debug=True)
+    webview.start(debug=False)
 
 if __name__ == '__main__':
     # Start the window focus tracking in a separate thread

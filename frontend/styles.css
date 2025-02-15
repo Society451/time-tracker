@@ -5,18 +5,101 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: #f4f4f9;
+    color: #333;
+    overflow: hidden; /* Prevent scroll bars */
 }
 
 h1 {
     margin-top: 20px;
+    color: #007bff;
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 80%;
+    margin-top: 20px;
 }
 
 #chart {
-    width: 80%;
+    width: 60%;
     height: 600px;
-    margin-top: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
 }
 
 .tooltip {
     fill: black;
+}
+
+#color-guide {
+    width: 30%;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column; /* Make the legend vertical */
+    align-items: flex-start;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    max-height: 600px; /* Ensure the color guide does not overflow */
+    overflow-y: auto;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.color-text {
+    font-size: 14px;
+    color: #555;
+}
+
+#copy-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#copy-button:hover {
+    background-color: #0056b3;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Custom scroll bar styles */
+#color-guide::-webkit-scrollbar {
+    width: 10px;
+}
+
+#color-guide::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#color-guide::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#color-guide::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
